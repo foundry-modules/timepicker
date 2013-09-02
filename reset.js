@@ -1,0 +1,1 @@
+$.timepicker.setDefaults($.timepicker.regional['']);
