@@ -163,6 +163,25 @@
 				fns = {},
 				overrides, i;
 
+			if ($.isPlainObject(opts)) {
+
+				// hack: accept lang property.
+				var langCode = opts.lang;
+
+				if (langCode) {
+
+					var altLangCode = langCode.split("-")[0];
+
+					// Get language strings
+					var langStrings = $.timepicker.regional[langCode] || $.timepicker.regional[altLangCode];
+
+					// If language strings exists, use it.
+					if (langStrings) {
+						$.extend(opts, langStrings);
+					}
+				}
+			}
+
 			for (var attrName in this._defaults) {
 				if (this._defaults.hasOwnProperty(attrName)) {
 					var attrValue = $input.attr('time:' + attrName);
@@ -452,7 +471,7 @@
 										}
 									}
 								}
-								
+
 								tp_inst.control.value(tp_inst, tp_inst[f + '_slider'], litem, n);
 
 								tp_inst._onTimeChange();
@@ -491,7 +510,7 @@
 					tp_inst._onSelectHandler();
 				});
 				// End timezone options
-				
+
 				// inject timepicker into datepicker
 				var $buttonPanel = $dp.find('.ui-datepicker-buttonpane');
 				if ($buttonPanel.length) {
@@ -513,7 +532,7 @@
 					var sliderAccessArgs = this._defaults.sliderAccessArgs,
 						rtl = this._defaults.isRTL;
 					sliderAccessArgs.isRTL = rtl;
-						
+
 					setTimeout(function () { // fix for inline mode
 						if ($tp.find('.ui-slider-access').length === 0) {
 							$tp.find('.ui-slider:visible').sliderAccess(sliderAccessArgs);
@@ -665,44 +684,44 @@
 				}
 			}
 
-			if (dp_inst.settings.minTime!==null) {				
-				var tempMinTime=new Date("01/01/1970 " + dp_inst.settings.minTime);				
+			if (dp_inst.settings.minTime!==null) {
+				var tempMinTime=new Date("01/01/1970 " + dp_inst.settings.minTime);
 				if (this.hour<tempMinTime.getHours()) {
 					this.hour=this._defaults.hourMin=tempMinTime.getHours();
-					this.minute=this._defaults.minuteMin=tempMinTime.getMinutes();							
+					this.minute=this._defaults.minuteMin=tempMinTime.getMinutes();
 				} else if (this.hour===tempMinTime.getHours() && this.minute<tempMinTime.getMinutes()) {
 					this.minute=this._defaults.minuteMin=tempMinTime.getMinutes();
-				} else {						
+				} else {
 					if (this._defaults.hourMin<tempMinTime.getHours()) {
 						this._defaults.hourMin=tempMinTime.getHours();
-						this._defaults.minuteMin=tempMinTime.getMinutes();					
+						this._defaults.minuteMin=tempMinTime.getMinutes();
 					} else if (this._defaults.hourMin===tempMinTime.getHours()===this.hour && this._defaults.minuteMin<tempMinTime.getMinutes()) {
-						this._defaults.minuteMin=tempMinTime.getMinutes();						
+						this._defaults.minuteMin=tempMinTime.getMinutes();
 					} else {
 						this._defaults.minuteMin=0;
 					}
-				}				
+				}
 			}
-			
-			if (dp_inst.settings.maxTime!==null) {				
+
+			if (dp_inst.settings.maxTime!==null) {
 				var tempMaxTime=new Date("01/01/1970 " + dp_inst.settings.maxTime);
 				if (this.hour>tempMaxTime.getHours()) {
-					this.hour=this._defaults.hourMax=tempMaxTime.getHours();						
+					this.hour=this._defaults.hourMax=tempMaxTime.getHours();
 					this.minute=this._defaults.minuteMax=tempMaxTime.getMinutes();
-				} else if (this.hour===tempMaxTime.getHours() && this.minute>tempMaxTime.getMinutes()) {							
-					this.minute=this._defaults.minuteMax=tempMaxTime.getMinutes();						
+				} else if (this.hour===tempMaxTime.getHours() && this.minute>tempMaxTime.getMinutes()) {
+					this.minute=this._defaults.minuteMax=tempMaxTime.getMinutes();
 				} else {
 					if (this._defaults.hourMax>tempMaxTime.getHours()) {
 						this._defaults.hourMax=tempMaxTime.getHours();
-						this._defaults.minuteMax=tempMaxTime.getMinutes();					
+						this._defaults.minuteMax=tempMaxTime.getMinutes();
 					} else if (this._defaults.hourMax===tempMaxTime.getHours()===this.hour && this._defaults.minuteMax>tempMaxTime.getMinutes()) {
-						this._defaults.minuteMax=tempMaxTime.getMinutes();						
+						this._defaults.minuteMax=tempMaxTime.getMinutes();
 					} else {
 						this._defaults.minuteMax=59;
 					}
-				}						
+				}
 			}
-			
+
 			if (adjustSliders !== undefined && adjustSliders === true) {
 				var hourMax = parseInt((this._defaults.hourMax - ((this._defaults.hourMax - this._defaults.hourMin) % this._defaults.stepHour)), 10),
 					minMax = parseInt((this._defaults.minuteMax - ((this._defaults.minuteMax - this._defaults.minuteMin) % this._defaults.stepMinute)), 10),
@@ -796,11 +815,11 @@
 			// If the update was done using the sliders, update the input field.
 			var hasChanged = (
 						hour !== parseInt(this.hour,10) || // sliders should all be numeric
-						minute !== parseInt(this.minute,10) || 
-						second !== parseInt(this.second,10) || 
-						millisec !== parseInt(this.millisec,10) || 
-						microsec !== parseInt(this.microsec,10) || 
-						(this.ampm.length > 0 && (hour < 12) !== ($.inArray(this.ampm.toUpperCase(), this.amNames) !== -1)) || 
+						minute !== parseInt(this.minute,10) ||
+						second !== parseInt(this.second,10) ||
+						millisec !== parseInt(this.millisec,10) ||
+						microsec !== parseInt(this.microsec,10) ||
+						(this.ampm.length > 0 && (hour < 12) !== ($.inArray(this.ampm.toUpperCase(), this.amNames) !== -1)) ||
 						(this.timezone !== null && timezone !== this.timezone.toString()) // could be numeric or "EST" format, so use toString()
 					);
 
@@ -870,8 +889,8 @@
 		*/
 		_updateDateTime: function (dp_inst) {
 			dp_inst = this.inst || dp_inst;
-			var dtTmp = (dp_inst.currentYear > 0? 
-							new Date(dp_inst.currentYear, dp_inst.currentMonth, dp_inst.currentDay) : 
+			var dtTmp = (dp_inst.currentYear > 0?
+							new Date(dp_inst.currentYear, dp_inst.currentMonth, dp_inst.currentDay) :
 							new Date(dp_inst.selectedYear, dp_inst.selectedMonth, dp_inst.selectedDay)),
 				dt = $.datepicker._daylightSavingAdjust(dtTmp),
 				//dt = $.datepicker._daylightSavingAdjust(new Date(dp_inst.selectedYear, dp_inst.selectedMonth, dp_inst.selectedDay)),
@@ -881,7 +900,7 @@
 				timeAvailable = dt !== null && this.timeDefined;
 			this.formattedDate = $.datepicker.formatDate(dateFmt, (dt === null ? new Date() : dt), formatCfg);
 			var formattedDateTime = this.formattedDate;
-			
+
 			// if a slider was changed but datepicker doesn't have a value yet, set it
 			if (dp_inst.lastVal === "") {
                 dp_inst.currentYear = dp_inst.selectedYear;
@@ -891,7 +910,7 @@
 
 			/*
 			* remove following lines to force every changes in date picker to change the input value
-			* Bug descriptions: when an input field has a default value, and click on the field to pop up the date picker. 
+			* Bug descriptions: when an input field has a default value, and click on the field to pop up the date picker.
 			* If the user manually empty the value in the input field, the date picker will never change selected value.
 			*/
 			//if (dp_inst.lastVal !== undefined && (dp_inst.lastVal.length > 0 && this.$input.val().length === 0)) {
@@ -916,7 +935,7 @@
 				var altFormattedDateTime = '',
 					altSeparator = this._defaults.altSeparator !== null ? this._defaults.altSeparator : this._defaults.separator,
 					altTimeSuffix = this._defaults.altTimeSuffix !== null ? this._defaults.altTimeSuffix : this._defaults.timeSuffix;
-				
+
 				if (!this._defaults.timeOnly) {
 					if (this._defaults.altFormat) {
 						altFormattedDateTime = $.datepicker.formatDate(this._defaults.altFormat, (dt === null ? new Date() : dt), formatCfg);
@@ -983,7 +1002,7 @@
 						stop: function (event, ui) {
 							tp_inst._onSelectHandler();
 						}
-					});	
+					});
 				},
 				options: function (tp_inst, obj, unit, opts, val) {
 					if (tp_inst._defaults.isRTL) {
@@ -1058,7 +1077,7 @@
 						if (val === undefined) {
 							return $t.data(opts);
 						}
-						o[opts] = val;	
+						o[opts] = val;
 					}
 					else { o = opts; }
 					return tp_inst.control.create(tp_inst, obj, $t.data('unit'), $t.val(), o.min || $t.data('min'), o.max || $t.data('max'), o.step || $t.data('step'));
